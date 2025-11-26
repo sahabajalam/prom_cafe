@@ -7,7 +7,11 @@ from fastapi.responses import FileResponse
 import google.generativeai as genai
 import os
 import json
+from dotenv import load_dotenv
 from . import models, schemas, database
+
+# Load environment variables
+load_dotenv()
 
 # Create tables
 models.Base.metadata.create_all(bind=database.engine)
@@ -36,7 +40,10 @@ def read_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
     return items
 
 # Configure Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    print("WARNING: GEMINI_API_KEY not found in environment variables")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel('models/gemini-2.0-flash')
 
 @app.get("/menu/search/", response_model=schemas.SearchResponse)
@@ -130,7 +137,7 @@ def search_menu_items(q: str, db: Session = Depends(get_db)):
             models.MenuItem.name.ilike(f"%{q}%") | 
             models.MenuItem.description.ilike(f"%{q}%")
         ).all()
-        return schemas.SearchResponse(items=items, answer=None)
+        return schemas.SearchResponse(items=items, answer=f"AI Error: {str(e)}")
 
 # Serve static files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")

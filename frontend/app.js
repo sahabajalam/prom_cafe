@@ -2,11 +2,11 @@ const API_URL = '';
 let currentCategory = 'Breakfast';
 let allItems = [];
 
-async function fetchMenu(query = '') {
+async function fetchMenu(query = '', forceRefresh = false) {
     const container = document.getElementById('menuContainer');
 
-    // Show loading state if it's a new search
-    if (query) {
+    // Show loading state if it's a new search or initial load
+    if (query || forceRefresh || allItems.length === 0) {
         container.innerHTML = `
             <div class="animate-pulse space-y-4">
                 <div class="h-32 bg-gray-200 rounded-2xl"></div>
@@ -14,31 +14,40 @@ async function fetchMenu(query = '') {
             </div>`;
     }
 
-    const endpoint = query ? `/menu/search/?q=${encodeURIComponent(query)}` : '/menu/';
-    try {
-        const response = await fetch(`${API_URL}${endpoint}`);
-        const data = await response.json();
+    // Only fetch from server if searching OR if we don't have cached data
+    if (query || allItems.length === 0 || forceRefresh) {
+        // Cache busting
+        const timestamp = new Date().getTime();
+        const endpoint = query ? `/menu/search/?q=${encodeURIComponent(query)}&t=${timestamp}` : `/menu/?t=${timestamp}`;
+        try {
+            const response = await fetch(`${API_URL}${endpoint}`);
+            const data = await response.json();
 
-        // Handle new response format (SearchResponse) or legacy list
-        let items = [];
-        let answer = null;
+            // Handle new response format (SearchResponse) or legacy list
+            let items = [];
+            let answer = null;
 
-        if (Array.isArray(data)) {
-            items = data;
-        } else {
-            items = data.items;
-            answer = data.answer;
+            if (Array.isArray(data)) {
+                items = data;
+            } else {
+                items = data.items;
+                answer = data.answer;
+            }
+
+            allItems = items; // Store for client-side filtering
+            renderMenu(items, answer);
+        } catch (error) {
+            console.error('Error fetching menu:', error);
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-red-500 font-medium">Failed to load menu.</p>
+                    <p class="text-xs text-gray-400 mt-2">${error.message}</p>
+                    <button onclick="fetchMenu('', true)" class="mt-4 px-4 py-2 bg-brand-100 text-brand-700 rounded-lg text-sm">Try Again</button>
+                </div>`;
         }
-
-        allItems = items; // Store for client-side filtering if needed later
-        renderMenu(items, answer);
-    } catch (error) {
-        console.error('Error fetching menu:', error);
-        container.innerHTML = `
-            <div class="text-center py-12">
-                <p class="text-red-500 font-medium">Failed to load menu.</p>
-                <button onclick="fetchMenu()" class="mt-4 px-4 py-2 bg-brand-100 text-brand-700 rounded-lg text-sm">Try Again</button>
-            </div>`;
+    } else {
+        // Use cached data - just re-render instantly
+        renderMenu(allItems);
     }
 }
 
@@ -63,7 +72,8 @@ function renderMenu(items, answer = null) {
     }
 
     // Filter by category if not searching (search results should show all matches)
-    const isSearch = document.getElementById('searchInput').value.length > 0;
+    const searchVal = document.getElementById('searchInput').value;
+    const isSearch = searchVal.length > 0;
     const filteredItems = (currentCategory === 'All' || isSearch)
         ? items
         : items.filter(item => item.category === currentCategory);
@@ -122,7 +132,7 @@ function renderMenu(items, answer = null) {
         card.innerHTML = `
             <div class="flex justify-between items-start mb-3">
                 <h3 class="font-bold text-gray-800 text-xl leading-tight group-hover:text-brand-600 transition-colors">${item.name}</h3>
-                <span class="font-bold text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg ml-2 whitespace-nowrap text-lg">${priceDisplay}</span>
+                <span class="font-bold text-accent-700 bg-accent-100 px-3 py-1.5 rounded-lg ml-2 whitespace-nowrap text-lg shadow-sm">${priceDisplay}</span>
             </div>
             <p class="text-gray-600 text-base mb-3 leading-relaxed">${item.description || ''}</p>
             <div class="flex flex-wrap gap-y-2 mb-1">
@@ -138,28 +148,49 @@ function renderMenu(items, answer = null) {
 // Search Handler
 const searchInput = document.getElementById('searchInput');
 const searchIcon = document.getElementById('searchIcon');
+const searchBtn = document.getElementById('searchBtn');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
 
-searchInput.addEventListener('input', (e) => {
-    const query = e.target.value;
-
-    // Visual feedback
+function updateSearchVisuals(query) {
     if (query.length > 0) {
         searchInput.classList.remove('bg-white/10', 'text-white', 'placeholder-white/70');
         searchInput.classList.add('bg-white', 'text-gray-900');
         searchIcon.classList.remove('text-white/70');
         searchIcon.classList.add('text-brand-500');
+        clearSearchBtn.classList.remove('hidden');
     } else {
         searchInput.classList.add('bg-white/10', 'text-white', 'placeholder-white/70');
         searchInput.classList.remove('bg-white', 'text-gray-900');
         searchIcon.classList.add('text-white/70');
         searchIcon.classList.remove('text-brand-500');
+        clearSearchBtn.classList.add('hidden');
     }
+}
 
-    // Debounce slightly
-    clearTimeout(window.searchTimeout);
-    window.searchTimeout = setTimeout(() => {
-        fetchMenu(query);
-    }, 300);
+// Input handler for visuals only
+searchInput.addEventListener('input', (e) => {
+    updateSearchVisuals(e.target.value);
+});
+
+// Search execution
+function executeSearch() {
+    const query = searchInput.value.trim();
+    fetchMenu(query);
+}
+
+searchBtn.addEventListener('click', executeSearch);
+
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        executeSearch();
+    }
+});
+
+// Clear handler
+clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    updateSearchVisuals('');
+    fetchMenu(); // Reset to full menu
 });
 
 // Category Handler

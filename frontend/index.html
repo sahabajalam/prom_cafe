@@ -16,11 +16,29 @@
                     },
                     colors: {
                         brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            900: '#134e4a',
+                            50: '#fff7ed',  // Warm Orange 50
+                            100: '#ffedd5', // Warm Orange 100
+                            200: '#fed7aa', // Warm Orange 200
+                            300: '#fdba74', // Warm Orange 300
+                            400: '#fb923c', // Warm Orange 400
+                            500: '#f97316', // Warm Orange 500 (Primary)
+                            600: '#ea580c', // Warm Orange 600 (Hover)
+                            700: '#c2410c', // Warm Orange 700
+                            800: '#9a3412', // Warm Orange 800
+                            900: '#7c2d12', // Warm Orange 900 (Dark)
+                            950: '#431407', // Warm Orange 950
+                        },
+                        accent: {
+                            50: '#f7fee7',
+                            100: '#ecfccb',
+                            200: '#d9f99d',
+                            300: '#bef264',
+                            400: '#a3e635',
+                            500: '#84cc16',
+                            600: '#65a30d',
+                            700: '#4d7c0f',
+                            800: '#3f6212',
+                            900: '#365314',
                         }
                     }
                 }
@@ -52,14 +70,29 @@
             </p>
 
             <!-- Search Bar -->
-            <div class="mt-10 relative max-w-md mx-auto">
-                <input type="text" id="searchInput" placeholder="Ask me anything... (e.g., 'vegan breakfast')"
-                    class="w-full pl-14 pr-4 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/80 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-xl">
-                <svg class="w-7 h-7 text-white/80 absolute left-4 top-5 transition-colors" id="searchIcon" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+            <div class="mt-10 relative max-w-2xl mx-auto flex gap-2">
+                <div class="relative flex-grow">
+                    <input type="text" id="searchInput" placeholder="Ask me anything... (e.g., 'vegan breakfast')"
+                        class="w-full pl-12 pr-10 py-4 text-lg rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/80 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-xl">
+                    <svg class="w-6 h-6 text-white/80 absolute left-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none"
+                        id="searchIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <!-- Clear Button -->
+                    <button id="clearSearchBtn"
+                        class="hidden absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-red-50 text-red-500 hover:text-red-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Search Button -->
+                <button id="searchBtn"
+                    class="px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-2xl shadow-xl transition-colors active:scale-95 whitespace-nowrap">
+                    Search
+                </button>
             </div>
         </div>
     </header>
