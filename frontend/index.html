@@ -143,32 +143,164 @@
     <main class="container mx-auto px-4 py-6 max-w-2xl pb-24">
         <div id="menuContainer" class="grid gap-4">
             <!-- Loading Skeleton -->
-            <div class="animate-pulse space-y-4">
-                <div class="h-32 bg-gray-200 rounded-2xl"></div>
-                <div class="h-32 bg-gray-200 rounded-2xl"></div>
-                <div class="h-32 bg-gray-200 rounded-2xl"></div>
-            </div>
-        </div>
-    </main>
+            <!DOCTYPE html>
+            <html lang="en">
 
-    <!-- Debug Footer -->
-    <footer class="bg-gray-100 py-8 mt-12 border-t border-gray-200">
-        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
-            <p>&copy; 2024 Prom Cafe. All rights reserved.</p>
-            <div id="debugInfo" class="mt-4 p-4 bg-gray-200 rounded-lg inline-block text-left text-xs font-mono hidden">
-                <p class="font-bold mb-2">System Status:</p>
-                <p>Items Loaded: <span id="debugCount">0</span></p>
-                <p>Categories: <span id="debugCategories">None</span></p>
-                <button
-                    onclick="fetch('/seed_db?force=true').then(r => r.json()).then(d => alert(d.message + '. Please refresh.'))"
-                    class="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Force Reseed DB</button>
-            </div>
-            <button onclick="document.getElementById('debugInfo').classList.toggle('hidden')"
-                class="mt-2 text-gray-300 hover:text-gray-500 underline">Toggle Debug Info</button>
-        </div>
-    </footer>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport"
+                    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+                <title>Prom Cafe - Curated Flavours for Every Palate</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+                    rel="stylesheet">
+                <script>
+                    tailwind.config = {
+                        theme: {
+                            extend: {
+                                fontFamily: {
+                                    sans: ['Outfit', 'sans-serif'],
+                                },
+                                colors: {
+                                    brand: {
+                                        50: '#fff7ed',  // Warm Orange 50
+                                        100: '#ffedd5', // Warm Orange 100
+                                        200: '#fed7aa', // Warm Orange 200
+                                        300: '#fdba74', // Warm Orange 300
+                                        400: '#fb923c', // Warm Orange 400
+                                        500: '#f97316', // Warm Orange 500 (Primary)
+                                        600: '#ea580c', // Warm Orange 600 (Hover)
+                                        700: '#c2410c', // Warm Orange 700
+                                        800: '#9a3412', // Warm Orange 800
+                                        900: '#7c2d12', // Warm Orange 900 (Dark)
+                                        950: '#431407', // Warm Orange 950
+                                    },
+                                    accent: {
+                                        50: '#f7fee7',
+                                        100: '#ecfccb',
+                                        200: '#d9f99d',
+                                        300: '#bef264',
+                                        400: '#a3e635',
+                                        500: '#84cc16',
+                                        600: '#65a30d',
+                                        700: '#4d7c0f',
+                                        800: '#3f6212',
+                                        900: '#365314',
+                                    }
+                                }
+                            }
+                        }
+                    }
+                </script>
+                <style>
+                    .hide-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
 
-    <script src="/static/app.js"></script>
-</body>
+                    .hide-scrollbar {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+                </style>
+            </head>
 
-</html>
+            <body
+                class="bg-gray-50 text-gray-900 font-sans antialiased bg-[url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=2574&auto=format&fit=crop')] bg-cover bg-center bg-fixed bg-no-repeat">
+                <div class="fixed inset-0 bg-white/90 -z-10"></div>
+
+                <!-- Hero Section -->
+                <header class="relative bg-brand-900 text-white overflow-hidden rounded-b-3xl shadow-lg">
+                    <div class="absolute inset-0 opacity-40 bg-[url('/static/prom.jpg')] bg-cover bg-center"></div>
+                    <div class="relative px-6 py-16 text-center">
+                        <h1 class="text-5xl md:text-6xl font-bold mb-3 tracking-tight drop-shadow-md">Prom Cafe</h1>
+                        <p class="text-brand-100 text-xl md:text-2xl font-light drop-shadow-sm">Curated Flavours for
+                            Every Palate
+                        </p>
+
+                        <!-- Search Bar -->
+                        <div class="mt-10 relative max-w-2xl mx-auto flex gap-2">
+                            <div class="relative flex-grow">
+                                <input type="text" id="searchInput"
+                                    placeholder="Ask me anything... (e.g., 'vegan breakfast')"
+                                    class="w-full pl-12 pr-10 py-4 text-lg rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/80 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-xl">
+                                <svg class="w-6 h-6 text-white/80 absolute left-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none"
+                                    id="searchIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <!-- Clear Button -->
+                                <button id="clearSearchBtn"
+                                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-red-50 text-red-500 hover:text-red-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Search Button -->
+                            <button id="searchBtn"
+                                class="px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-2xl shadow-xl transition-colors active:scale-95 whitespace-nowrap">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Category Filter -->
+                <nav class="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-sm py-5 border-b border-gray-200/50">
+                    <div class="flex overflow-x-auto px-4 gap-3 hide-scrollbar" id="categoryNav">
+                        <button id="yourMealBtn"
+                            class="hidden px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95"
+                            data-category="Your Meal">Your Meal</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95"
+                            data-category="Breakfast">Breakfast</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Mains">Mains</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Drinks">Drinks</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Cakes">Cakes</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Ice Cream">Ice Cream</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Sandwiches">Sandwiches</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Toasties">Toasties</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Jackets">Jackets</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Sides">Sides</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Snacks">Snacks</button>
+                        <button
+                            class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                            data-category="Kids">Kids</button>
+                    </div>
+                </nav>
+
+                <!-- Menu Grid -->
+                <main class="container mx-auto px-4 py-6 max-w-2xl pb-24">
+                    <div id="menuContainer" class="grid gap-4">
+                        <!-- Loading Skeleton -->
+                        <div class="animate-pulse space-y-4">
+                            <div class="h-32 bg-gray-200 rounded-2xl"></div>
+                            <div class="h-32 bg-gray-200 rounded-2xl"></div>
+                            <div class="h-32 bg-gray-200 rounded-2xl"></div>
+                        </div>
+                    </div>
+                </main>
+
+                <script src="/static/app.js"></script>
+            </body>
+
+            </html>
