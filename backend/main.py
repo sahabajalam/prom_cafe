@@ -35,7 +35,7 @@ def get_db():
         db.close()
 
 @app.get("/menu/", response_model=List[schemas.MenuItem])
-def read_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_menu_items(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
     items = db.query(models.MenuItem).offset(skip).limit(limit).all()
     return items
 

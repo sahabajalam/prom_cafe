@@ -1,12 +1,15 @@
 const API_URL = '';
 let currentCategory = 'Breakfast';
-let allItems = [];
+let fullMenu = []; // Store the complete menu
+let suggestedItems = []; // Store AI-suggested items
+let currentAnswer = null; // Store current AI answer
 
 async function fetchMenu(query = '', forceRefresh = false) {
+    console.log('fetchMenu called', { query, forceRefresh, fullMenuLength: fullMenu.length });
     const container = document.getElementById('menuContainer');
 
     // Show loading state if it's a new search or initial load
-    if (query || forceRefresh || allItems.length === 0) {
+    if (query || forceRefresh || fullMenu.length === 0) {
         container.innerHTML = `
             <div class="animate-pulse space-y-4">
                 <div class="h-32 bg-gray-200 rounded-2xl"></div>
@@ -15,13 +18,16 @@ async function fetchMenu(query = '', forceRefresh = false) {
     }
 
     // Only fetch from server if searching OR if we don't have cached data
-    if (query || allItems.length === 0 || forceRefresh) {
+    // If searching, we always fetch to get new suggestions
+    if (query || fullMenu.length === 0 || forceRefresh) {
         // Cache busting
         const timestamp = new Date().getTime();
         const endpoint = query ? `/menu/search/?q=${encodeURIComponent(query)}&t=${timestamp}` : `/menu/?t=${timestamp}`;
         try {
+            console.log('Fetching from:', endpoint);
             const response = await fetch(`${API_URL}${endpoint}`);
             const data = await response.json();
+            console.log('Fetch response data:', data);
 
             // Handle new response format (SearchResponse) or legacy list
             let items = [];
@@ -34,8 +40,23 @@ async function fetchMenu(query = '', forceRefresh = false) {
                 answer = data.answer;
             }
 
-            allItems = items; // Store for client-side filtering
-            renderMenu(items, answer);
+            if (query) {
+                // It's a search result
+                suggestedItems = items;
+                currentAnswer = answer;
+                console.log('Search results loaded:', suggestedItems.length);
+                showYourMealCategory();
+                // Automatically switch to "Your Meal"
+                switchCategory('Your Meal');
+            } else {
+                // It's the full menu load
+                fullMenu = items;
+                console.log('Full menu loaded:', fullMenu.length);
+                // Ensure "Your Meal" is hidden on full refresh/load
+                hideYourMealCategory();
+                renderMenu();
+            }
+
         } catch (error) {
             console.error('Error fetching menu:', error);
             container.innerHTML = `
@@ -47,16 +68,81 @@ async function fetchMenu(query = '', forceRefresh = false) {
         }
     } else {
         // Use cached data - just re-render instantly
-        renderMenu(allItems);
+        console.log('Using cached data');
+        renderMenu();
     }
 }
 
-function renderMenu(items, answer = null) {
+function showYourMealCategory() {
+    const btn = document.getElementById('yourMealBtn');
+    if (btn) {
+        btn.classList.remove('hidden');
+    }
+}
+
+function hideYourMealCategory() {
+    const btn = document.getElementById('yourMealBtn');
+    if (btn) {
+        btn.classList.add('hidden');
+    }
+    // If we were on "Your Meal", switch back to default
+    if (currentCategory === 'Your Meal') {
+        switchCategory('Breakfast');
+    }
+}
+
+async function switchCategory(category) {
+    console.log('Switching category to:', category);
+    currentCategory = category;
+
+    // Update visual state of buttons
+    document.querySelectorAll('#categoryNav button').forEach(btn => {
+        const btnCat = btn.getAttribute('data-category');
+        if (btnCat === currentCategory) {
+            btn.className = 'px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95';
+            // Ensure the button is visible if it's "Your Meal"
+            if (btnCat === 'Your Meal') btn.classList.remove('hidden');
+        } else {
+            // Keep "Your Meal" hidden if it should be hidden, otherwise standard inactive style
+            if (btnCat === 'Your Meal' && suggestedItems.length === 0) {
+                btn.classList.add('hidden');
+            } else {
+                btn.className = 'px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95';
+                if (btnCat === 'Your Meal') btn.classList.remove('hidden');
+            }
+        }
+    });
+
+    if (category !== 'Your Meal' && fullMenu.length === 0) {
+        console.log('Full menu missing, fetching...');
+        await fetchMenu(); // Fetch full menu
+    } else {
+        renderMenu();
+    }
+}
+
+function renderMenu() {
+    console.log('renderMenu called', { currentCategory, fullMenuLength: fullMenu.length, suggestedItemsLength: suggestedItems.length });
     const container = document.getElementById('menuContainer');
     container.innerHTML = '';
 
-    // Show AI Answer if present
-    if (answer) {
+    let itemsToRender = [];
+    let answerToRender = null;
+
+    if (currentCategory === 'Your Meal') {
+        itemsToRender = suggestedItems;
+        answerToRender = currentAnswer;
+    } else {
+        // Filter from full menu
+        itemsToRender = (currentCategory === 'All')
+            ? fullMenu
+            : fullMenu.filter(item => item.category === currentCategory);
+    }
+
+    console.log('Items to render:', itemsToRender.length);
+
+    // Show AI Answer if present AND we are in "Your Meal" category
+    if (answerToRender && currentCategory === 'Your Meal') {
         const answerDiv = document.createElement('div');
         answerDiv.className = 'bg-brand-50 border border-brand-100 p-5 rounded-2xl mb-6 flex items-start gap-3 shadow-sm';
         answerDiv.innerHTML = `
@@ -65,20 +151,13 @@ function renderMenu(items, answer = null) {
             </div>
             <div>
                 <p class="text-brand-900 font-medium text-base">AI Suggestion</p>
-                <p class="text-gray-700 text-base mt-1 leading-relaxed whitespace-pre-wrap">${answer}</p>
+                <p class="text-gray-700 text-base mt-1 leading-relaxed whitespace-pre-wrap">${answerToRender}</p>
             </div>
         `;
         container.appendChild(answerDiv);
     }
 
-    // Filter by category if not searching (search results should show all matches)
-    const searchVal = document.getElementById('searchInput').value;
-    const isSearch = searchVal.length > 0;
-    const filteredItems = (currentCategory === 'All' || isSearch)
-        ? items
-        : items.filter(item => item.category === currentCategory);
-
-    if (filteredItems.length === 0) {
+    if (itemsToRender.length === 0) {
         container.innerHTML = `
             <div class="text-center py-12">
                 <div class="inline-block p-4 rounded-full bg-gray-100 mb-4">
@@ -89,7 +168,7 @@ function renderMenu(items, answer = null) {
         return;
     }
 
-    filteredItems.forEach(item => {
+    itemsToRender.forEach(item => {
         const card = document.createElement('div');
         card.className = 'bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group';
 
@@ -175,7 +254,9 @@ searchInput.addEventListener('input', (e) => {
 // Search execution
 function executeSearch() {
     const query = searchInput.value.trim();
-    fetchMenu(query);
+    if (query) {
+        fetchMenu(query);
+    }
 }
 
 searchBtn.addEventListener('click', executeSearch);
@@ -190,26 +271,25 @@ searchInput.addEventListener('keydown', (e) => {
 clearSearchBtn.addEventListener('click', () => {
     searchInput.value = '';
     updateSearchVisuals('');
-    fetchMenu(); // Reset to full menu
+    // Just clear the input - don't reload menu unless user wants to go back to main menu
+    // But per requirements, "Your Meal" disappears on refresh, but maybe we should let user clear search to go back?
+    // User said "if refresh the whole page the your meal category will disappear", implies persistence until refresh or maybe explicit action.
+    // Let's just clear input for now. If they click another category, search is cleared effectively.
 });
 
 // Category Handler
 document.getElementById('categoryNav').addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON') {
-        // Update active state
-        document.querySelectorAll('#categoryNav button').forEach(btn => {
-            btn.className = 'px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95';
-        });
-        e.target.className = 'px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95';
+        const category = e.target.getAttribute('data-category');
+        switchCategory(category);
 
-        currentCategory = e.target.getAttribute('data-category');
-
-        // Clear search if category is clicked
-        searchInput.value = '';
-        searchInput.dispatchEvent(new Event('input')); // Reset styles
-
-        // Re-render
-        fetchMenu();
+        // If switching away from "Your Meal" (and not to it), we might want to clear search input visuals?
+        // But we keep the "Your Meal" data populated until refresh or new search.
+        if (category !== 'Your Meal') {
+            // Optional: clear search input text if they navigate away?
+            // searchInput.value = '';
+            // updateSearchVisuals('');
+        }
     }
 });
 
