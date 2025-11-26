@@ -46,6 +46,11 @@ def seed_database(force: bool = False, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    count = db.query(models.MenuItem).count()
+    return {"status": "healthy", "item_count": count}
+
 @app.get("/menu/", response_model=List[schemas.MenuItem])
 def read_menu_items(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
     items = db.query(models.MenuItem).offset(skip).limit(limit).all()
