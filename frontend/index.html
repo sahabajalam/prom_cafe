@@ -1,35 +1,42 @@
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['Outfit', 'sans-serif'],
-                },
-                colors: {
-                    brand: {
-                        50: '#f0fdfa',
-                        100: '#ccfbf1',
-                        500: '#14b8a6',
-                        600: '#0d9488',
-                        900: '#134e4a',
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Prom Cafe - Curated Flavours for Every Palate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                        }
                     }
                 }
             }
         }
-    }
-</script>
-<style>
-    .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
 
-    .hide-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-</style>
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 </head>
 
 <body
@@ -39,15 +46,16 @@
     <!-- Hero Section -->
     <header class="relative bg-brand-900 text-white overflow-hidden rounded-b-3xl shadow-lg">
         <div class="absolute inset-0 opacity-40 bg-[url('/static/prom.jpg')] bg-cover bg-center"></div>
-        <div class="relative px-6 py-12 text-center">
-            <h1 class="text-4xl font-bold mb-2 tracking-tight drop-shadow-md">Prom Cafe</h1>
-            <p class="text-brand-100 text-lg font-light drop-shadow-sm">Curated Flavours for Every Palate</p>
+        <div class="relative px-6 py-16 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-3 tracking-tight drop-shadow-md">Prom Cafe</h1>
+            <p class="text-brand-100 text-xl md:text-2xl font-light drop-shadow-sm">Curated Flavours for Every Palate
+            </p>
 
             <!-- Search Bar -->
-            <div class="mt-8 relative max-w-md mx-auto">
+            <div class="mt-10 relative max-w-md mx-auto">
                 <input type="text" id="searchInput" placeholder="Ask me anything... (e.g., 'vegan breakfast')"
-                    class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/80 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-xl">
-                <svg class="w-6 h-6 text-white/80 absolute left-4 top-4 transition-colors" id="searchIcon" fill="none"
+                    class="w-full pl-14 pr-4 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/80 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-xl">
+                <svg class="w-7 h-7 text-white/80 absolute left-4 top-5 transition-colors" id="searchIcon" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -57,22 +65,22 @@
     </header>
 
     <!-- Category Filter -->
-    <nav class="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-sm py-4 border-b border-gray-200/50">
+    <nav class="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-sm py-5 border-b border-gray-200/50">
         <div class="flex overflow-x-auto px-4 gap-3 hide-scrollbar" id="categoryNav">
             <button
-                class="px-5 py-2 rounded-full bg-brand-600 text-white text-sm font-medium shadow-md whitespace-nowrap transition-transform active:scale-95"
+                class="px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95"
                 data-category="Breakfast">Breakfast</button>
             <button
-                class="px-5 py-2 rounded-full bg-white text-gray-600 text-sm font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
                 data-category="Mains">Mains</button>
             <button
-                class="px-5 py-2 rounded-full bg-white text-gray-600 text-sm font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
                 data-category="Drinks">Drinks</button>
             <button
-                class="px-5 py-2 rounded-full bg-white text-gray-600 text-sm font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
                 data-category="Cakes">Cakes</button>
             <button
-                class="px-5 py-2 rounded-full bg-white text-gray-600 text-sm font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
+                class="px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95"
                 data-category="Ice Cream">Ice Cream</button>
         </div>
     </nav>
@@ -88,10 +96,6 @@
             </div>
         </div>
     </main>
-
-    <footer class="text-center py-6 text-gray-400 text-sm">
-        <p>Powered by <span class="font-semibold text-brand-600">Flavorly</span></p>
-    </footer>
 
     <script src="/static/app.js"></script>
 </body>

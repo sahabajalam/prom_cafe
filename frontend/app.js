@@ -49,14 +49,14 @@ function renderMenu(items, answer = null) {
     // Show AI Answer if present
     if (answer) {
         const answerDiv = document.createElement('div');
-        answerDiv.className = 'bg-brand-50 border border-brand-100 p-4 rounded-2xl mb-6 flex items-start gap-3 shadow-sm';
+        answerDiv.className = 'bg-brand-50 border border-brand-100 p-5 rounded-2xl mb-6 flex items-start gap-3 shadow-sm';
         answerDiv.innerHTML = `
             <div class="bg-brand-100 p-2 rounded-full flex-shrink-0">
-                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </div>
             <div>
-                <p class="text-brand-900 font-medium text-sm">AI Suggestion</p>
-                <p class="text-gray-700 text-sm mt-1 leading-relaxed whitespace-pre-wrap">${answer}</p>
+                <p class="text-brand-900 font-medium text-base">AI Suggestion</p>
+                <p class="text-gray-700 text-base mt-1 leading-relaxed whitespace-pre-wrap">${answer}</p>
             </div>
         `;
         container.appendChild(answerDiv);
@@ -95,23 +95,23 @@ function renderMenu(items, answer = null) {
 
                 // Clean up tag text (remove parenthesis often found in raw data)
                 const cleanTag = tag.replace(/[()]/g, '');
-                return `<span class="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full ${colorClass} mr-1.5">${cleanTag}</span>`;
+                return `<span class="text-xs uppercase tracking-wider font-bold px-2.5 py-1.5 rounded-full ${colorClass} mr-1.5">${cleanTag}</span>`;
             }).join('');
         }
 
         let alertHtml = '';
         if (item.safety_alerts) {
             alertHtml = `
-                <div class="mt-3 p-3 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2">
-                    <svg class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <p class="text-xs text-red-700 font-medium leading-relaxed">${item.safety_alerts}</p>
+                <div class="mt-3 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2">
+                    <svg class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <p class="text-sm text-red-700 font-medium leading-relaxed">${item.safety_alerts}</p>
                 </div>`;
         }
 
         let mayContainHtml = '';
         if (item.may_contain) {
-            mayContainHtml = `<p class="mt-2 text-xs text-amber-600 font-medium flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            mayContainHtml = `<p class="mt-2 text-sm text-amber-600 font-medium flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 May contain: ${item.may_contain}
             </p>`;
         }
@@ -120,11 +120,11 @@ function renderMenu(items, answer = null) {
         const priceDisplay = item.price > 0 ? `£${item.price.toFixed(2)}` : '';
 
         card.innerHTML = `
-            <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-gray-800 text-lg leading-tight group-hover:text-brand-600 transition-colors">${item.name}</h3>
-                <span class="font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded-lg ml-2 whitespace-nowrap">${priceDisplay}</span>
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="font-bold text-gray-800 text-xl leading-tight group-hover:text-brand-600 transition-colors">${item.name}</h3>
+                <span class="font-bold text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg ml-2 whitespace-nowrap text-lg">${priceDisplay}</span>
             </div>
-            <p class="text-gray-500 text-sm mb-3 leading-relaxed">${item.description || ''}</p>
+            <p class="text-gray-600 text-base mb-3 leading-relaxed">${item.description || ''}</p>
             <div class="flex flex-wrap gap-y-2 mb-1">
                 ${tagsHtml}
             </div>
@@ -167,9 +167,9 @@ document.getElementById('categoryNav').addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON') {
         // Update active state
         document.querySelectorAll('#categoryNav button').forEach(btn => {
-            btn.className = 'px-5 py-2 rounded-full bg-white text-gray-600 text-sm font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95';
+            btn.className = 'px-6 py-3 rounded-full bg-white text-gray-600 text-base font-medium border border-gray-200 shadow-sm whitespace-nowrap hover:bg-gray-50 transition-transform active:scale-95';
         });
-        e.target.className = 'px-5 py-2 rounded-full bg-brand-600 text-white text-sm font-medium shadow-md whitespace-nowrap transition-transform active:scale-95';
+        e.target.className = 'px-6 py-3 rounded-full bg-brand-600 text-white text-base font-medium shadow-md whitespace-nowrap transition-transform active:scale-95';
 
         currentCategory = e.target.getAttribute('data-category');
 
