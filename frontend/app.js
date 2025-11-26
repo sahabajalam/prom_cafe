@@ -126,6 +126,11 @@ function renderMenu() {
     const container = document.getElementById('menuContainer');
     container.innerHTML = '';
 
+    // Update Debug Info
+    document.getElementById('debugCount').textContent = fullMenu.length;
+    const cats = [...new Set(fullMenu.map(i => i.category))].join(', ');
+    document.getElementById('debugCategories').textContent = cats || 'None';
+
     let itemsToRender = [];
     let answerToRender = null;
 

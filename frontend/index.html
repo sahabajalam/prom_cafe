@@ -151,6 +151,23 @@
         </div>
     </main>
 
+    <!-- Debug Footer -->
+    <footer class="bg-gray-100 py-8 mt-12 border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
+            <p>&copy; 2024 Prom Cafe. All rights reserved.</p>
+            <div id="debugInfo" class="mt-4 p-4 bg-gray-200 rounded-lg inline-block text-left text-xs font-mono hidden">
+                <p class="font-bold mb-2">System Status:</p>
+                <p>Items Loaded: <span id="debugCount">0</span></p>
+                <p>Categories: <span id="debugCategories">None</span></p>
+                <button
+                    onclick="fetch('/seed_db?force=true').then(r => r.json()).then(d => alert(d.message + '. Please refresh.'))"
+                    class="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Force Reseed DB</button>
+            </div>
+            <button onclick="document.getElementById('debugInfo').classList.toggle('hidden')"
+                class="mt-2 text-gray-300 hover:text-gray-500 underline">Toggle Debug Info</button>
+        </div>
+    </footer>
+
     <script src="/static/app.js"></script>
 </body>
 
