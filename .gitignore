@@ -14,9 +14,7 @@ ENV/
 # Environment Variables
 .env
 
-# Database
-*.db
-*.sqlite3
+
 
 # OS Files
 .DS_Store
