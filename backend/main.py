@@ -18,6 +18,10 @@ models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Flavorly API")
 
+@app.on_event("startup")
+def on_startup():
+    seeds.seed_data()
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
