@@ -2,14 +2,20 @@ from sqlalchemy.orm import Session
 from .database import SessionLocal, engine
 from . import models
 
-def seed_data():
+def seed_data(force: bool = False):
     models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     
     # Check if data exists
     if db.query(models.MenuItem).count() > 0:
-        print("Data already exists.")
-        return
+        if force:
+            print("Forcing re-seed: Deleting existing items...")
+            db.query(models.MenuItem).delete()
+            db.commit()
+        else:
+            print("Data already exists.")
+            db.close()
+            return
 
     # Ingredients (simplified for now, extracting unique allergens from PDF logic would be complex here)
     # We will just store allergens in the menu item or ingredient text for now.

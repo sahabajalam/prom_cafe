@@ -8,7 +8,7 @@ import google.generativeai as genai
 import os
 import json
 from dotenv import load_dotenv
-from . import models, schemas, database
+from . import models, schemas, database, seeds
 
 # Load environment variables
 load_dotenv()
@@ -33,6 +33,14 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.get("/seed_db")
+def seed_database(force: bool = False, db: Session = Depends(get_db)):
+    try:
+        seeds.seed_data(force=force)
+        return {"message": "Database seeded successfully", "force": force}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/menu/", response_model=List[schemas.MenuItem])
 def read_menu_items(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
